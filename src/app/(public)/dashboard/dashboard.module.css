@@ -1,0 +1,74 @@
+.dashboard {
+  background-color: #475b74;
+  height: 100vh;
+}
+
+.dashboard__header {
+  padding: 12px 24px;
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.dashboard__header__icon {
+  height: 32px;
+}
+
+.dashboard__container {
+  background-color: #f3f3f1;
+  border-radius: 18px;
+  display: flex;
+}
+
+.dashboard__content {
+  padding: 32px 12px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.dashboard__user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.dashboard__userInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard__userInfo__name {
+  font-size: 16px;
+  color: #000;
+  cursor: pointer;
+  position: relative;
+}
+
+.dashboard__userInfo__description {
+  color: #a8aaa2;
+  font-size: 14px;
+  cursor: pointer;
+  position: relative;
+}
+
+.dashboard__userInfo__name::after,
+.dashboard__userInfo__description::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: currentColor;
+  transition: width 0.3s ease;
+}
+
+.dashboard__userInfo__name:hover::after,
+.dashboard__userInfo__description:hover::after {
+  width: 100%;
+}
