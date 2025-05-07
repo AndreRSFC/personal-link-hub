@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import ReactQueryProvider from '@/provider/react-query.provider'
 import InternalSessionProvider from '@/provider/session.provider'
 import Head from 'next/head'
 
@@ -26,7 +27,9 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" />
       </Head>
       <body className={`${inter.variable}`}>
-        <InternalSessionProvider>{children}</InternalSessionProvider>
+        <ReactQueryProvider>
+          <InternalSessionProvider>{children}</InternalSessionProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   )

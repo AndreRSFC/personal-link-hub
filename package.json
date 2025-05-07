@@ -15,6 +15,8 @@
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
     "@supabase/supabase-js": "^2.49.4",
+    "@tanstack/react-query": "^5.75.5",
+    "@tanstack/react-query-devtools": "^5.75.5",
     "next": "15.3.1",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
