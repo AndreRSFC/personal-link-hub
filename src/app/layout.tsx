@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import InternalSessionProvider from '@/provider/session.provider'
 import Head from 'next/head'
 
 const inter = Inter({
@@ -24,7 +25,9 @@ export default function RootLayout({
       <Head>
         <link rel="icon" href="/favicon.svg" />
       </Head>
-      <body className={`${inter.variable}`}>{children}</body>
+      <body className={`${inter.variable}`}>
+        <InternalSessionProvider>{children}</InternalSessionProvider>
+      </body>
     </html>
   )
 }
