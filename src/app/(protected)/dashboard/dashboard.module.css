@@ -72,3 +72,17 @@
 .dashboard__userInfo__description:hover::after {
   width: 100%;
 }
+
+.dashboard__formImageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.dashboard__formImageText {
+  font-size: 14px;
+  color: #666;
+  margin-top: 8px;
+}

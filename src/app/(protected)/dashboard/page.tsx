@@ -5,6 +5,7 @@ import { UserImage } from '@/components/user-image'
 import { LogoImage } from '@/image'
 import useLinksStore, { type LinkItem } from '@/store/link.store'
 import styled from './dashboard.module.css'
+import { UserSection } from './user-section'
 
 const item = [
   {
@@ -60,21 +61,7 @@ export default function Dashboard() {
       <main className={styled.dashboard__container}>
         <Sidebar />
         <div className={styled.dashboard__content}>
-          {/* qualquer clique abrir um modal do user */}
-          <div className={styled.dashboard__user}>
-            <UserImage
-              src="https://ugc.production.linktr.ee/c848e59a-79c6-4e0a-bcfc-4e6e291b8112_untitled.webp?io=true&size=avatar"
-              size={60}
-            />
-            <div className={styled.dashboard__userInfo}>
-              <span className={styled.dashboard__userInfo__name}>
-                User Name
-              </span>
-              <span className={styled.dashboard__userInfo__description}>
-                Bio description
-              </span>
-            </div>
-          </div>
+          <UserSection />
           <LinksList
             // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             items={item as any}
