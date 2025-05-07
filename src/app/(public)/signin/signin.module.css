@@ -1,0 +1,47 @@
+.page {
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.page__container {
+  max-width: 540px;
+  width: 100%;
+  padding: 24px;
+}
+
+.page__text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 24px;
+}
+
+.page__title {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1;
+  color: #000;
+}
+
+.page__subtitle {
+  font-size: 16px;
+  line-height: 1;
+  color: #676b5f;
+}
+
+.page__form {
+  width: 100%;
+}
+
+.page__links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 16px;
+  justify-content: center;
+  align-items: center;
+}

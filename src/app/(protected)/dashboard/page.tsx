@@ -60,6 +60,7 @@ export default function Dashboard() {
       <main className={styled.dashboard__container}>
         <Sidebar />
         <div className={styled.dashboard__content}>
+          {/* qualquer clique abrir um modal do user */}
           <div className={styled.dashboard__user}>
             <UserImage
               src="https://ugc.production.linktr.ee/c848e59a-79c6-4e0a-bcfc-4e6e291b8112_untitled.webp?io=true&size=avatar"
@@ -75,16 +76,20 @@ export default function Dashboard() {
             </div>
           </div>
           <LinksList
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             items={item as any}
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             onItemClick={(item: any) => {
               console.log('Item clicado:', item)
 
               alert(`Clicou em: ${item.title}`)
             }}
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             onReorder={(newItems: any) => {
               console.log('Nova ordem:', newItems)
             }}
           />
+          {/* hover de cada item mostrar icone de editar e abrir um modal geral */}
           <button
             className={styled.addButton}
             onClick={handleAddLink}
