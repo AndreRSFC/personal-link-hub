@@ -1,38 +1,40 @@
 import {
   AnalyticsIcon,
   AudienceIcon,
-  ChevronIcon,
   EarnIcon,
   LinkIcon,
-  MenuIcon,
   ShopIcon,
 } from '@/icons'
 
 export const SIDEBAR_ITEMS = [
   {
-    label: 'Links',
-    href: '/links',
+    label: 'Dashboard',
+    href: '/dashboard',
     icon: <LinkIcon />,
   },
   {
     label: 'Shop',
     href: '/shop',
     icon: <ShopIcon />,
+    disabled: true,
   },
   {
     label: 'Earn',
     href: '/earn',
     icon: <EarnIcon />,
     badge: 'New',
+    disabled: true,
   },
   {
     label: 'Audience',
     href: '/audience',
     icon: <AudienceIcon />,
+    disabled: true,
   },
   {
     label: 'Analytics',
     href: '/analytics',
     icon: <AnalyticsIcon />,
+    disabled: true,
   },
 ]

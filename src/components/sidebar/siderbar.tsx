@@ -32,7 +32,10 @@ export const Sidebar: React.FC = () => {
           <nav className={styles.nav}>
             <ul className={styles.nav__list}>
               {SIDEBAR_ITEMS.map(item => (
-                <li key={item.href} className={styles.nav__item}>
+                <li
+                  key={item.href}
+                  className={`${styles.nav__item} ${item.disabled ? styles['nav__item--disabled'] : ''}`}
+                >
                   <Link
                     href={item.href}
                     className={`${styles.nav__link} ${pathname === item.href ? styles['nav__link--active'] : ''}`}
