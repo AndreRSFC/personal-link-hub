@@ -1,7 +1,15 @@
 import { HoverIcon } from '@/icons'
-import useLinksStore, { type LinkItem } from '@/store/link.store'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import styles from './link-list.module.css'
+
+export interface LinkItem {
+  id: string
+  title: string
+  url: string
+  is_visible?: boolean
+  image_url?: string | null
+  imageUrl?: string | null
+}
 
 const reorder = (
   list: LinkItem[],
@@ -15,13 +23,17 @@ const reorder = (
 }
 
 interface LinksListProps {
+  items: LinkItem[]
   onItemClick?: (item: LinkItem) => void
+  onReorder?: (items: LinkItem[]) => void
 }
 
-export const LinksList: React.FC<LinksListProps> = ({ onItemClick }) => {
-  const links = useLinksStore(state => state.links)
-  const setLinks = useLinksStore(state => state.setLinks)
-
+export const LinksList: React.FC<LinksListProps> = ({
+  items,
+  onItemClick,
+  onReorder,
+}) => {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const handleDragEnd = (result: any) => {
     if (!result.destination) {
       return
@@ -32,11 +44,14 @@ export const LinksList: React.FC<LinksListProps> = ({ onItemClick }) => {
     }
 
     const newLinks = reorder(
-      links,
+      items,
       result.source.index,
       result.destination.index
     )
-    setLinks(newLinks)
+
+    if (onReorder) {
+      onReorder(newLinks)
+    }
   }
 
   const handleItemClick = (item: LinkItem) => {
@@ -54,7 +69,7 @@ export const LinksList: React.FC<LinksListProps> = ({ onItemClick }) => {
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
-            {links.map((item, index) => (
+            {items.map((item, index) => (
               <Draggable key={item.id} draggableId={item.id} index={index}>
                 {(provided, snapshot) => (
                   <li
@@ -65,7 +80,6 @@ export const LinksList: React.FC<LinksListProps> = ({ onItemClick }) => {
                       ...provided.draggableProps.style,
                     }}
                   >
-                    {/* Área de drag handle com ícone - aqui é onde o hover ocorre */}
                     <div
                       {...provided.dragHandleProps}
                       className={styles.dragHandle}
@@ -81,10 +95,10 @@ export const LinksList: React.FC<LinksListProps> = ({ onItemClick }) => {
                       onClick={() => handleItemClick(item)}
                       onKeyDown={() => handleItemClick(item)}
                     >
-                      {item.imageUrl && (
+                      {(item.imageUrl || item.image_url) && (
                         <div className={styles.imageContainer}>
                           <img
-                            src={item.imageUrl}
+                            src={item.imageUrl || item.image_url || ''}
                             alt=""
                             className={styles.linkImage}
                           />
