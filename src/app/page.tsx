@@ -1,95 +1,128 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+import { Button } from '@/components/button'
+import { InputField } from '@/components/input'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import styles from './page.module.css'
+
+const pageTexts = {
+  login: {
+    title: 'Welcome back to Link Hub',
+    subtitle: 'Sign in to your account',
+    buttonText: 'Continue',
+    nextButtonText: 'Login',
+    alternateActionText: "Don't have an account?",
+    alternateActionLink: 'Sign up',
+    forgotPasswordVisible: true,
+  },
+  signup: {
+    title: 'Join in Link Hub',
+    subtitle: 'Sign up for free!',
+    buttonText: 'Create account',
+    alternateActionText: 'Already have an account?',
+    alternateActionLink: 'Sign in',
+    forgotPasswordVisible: false,
+  },
+}
 
 export default function Home() {
+  const searchParams = useSearchParams()
+  const isSignUp = searchParams.has('signUp')
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState(false)
+  const [emailVerified, setEmailVerified] = useState(false)
+
+  const texts = isSignUp ? pageTexts.signup : pageTexts.login
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    setEmail('')
+    setPassword('')
+    setError(false)
+    setEmailVerified(false)
+  }, [isSignUp])
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value)
+    if (emailVerified && !isSignUp) {
+      setEmailVerified(false)
+    }
+  }
+
+  const handlePasswordChange = e => {
+    setPassword(e.target.value)
+  }
+
+  const handleContinue = () => {
+    if (isSignUp) {
+      console.log('Cadastrando com email:', email, 'e senha:', password)
+    } else {
+      if (!emailVerified) {
+        setEmailVerified(true)
+      } else {
+        console.log('Fazendo login com email:', email, 'e senha:', password)
+      }
+    }
+  }
+
+  const buttonText = isSignUp
+    ? texts.buttonText
+    : !emailVerified
+      ? texts.buttonText
+      : texts.nextButtonText
+
+  const isButtonDisabled =
+    error || !email || (emailVerified && !password && !isSignUp)
+
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+      <main className={styles.page__container}>
+        <div className={styles.page__text}>
+          <h1 className={styles.page__title}>{texts.title}</h1>
+          <span className={styles.page__subtitle}>{texts.subtitle}</span>
+        </div>
+        <div className={styles.page__form}>
+          <InputField
+            type="email"
+            value={email}
+            placeholder="Email here"
+            label="Email"
+            onChange={handleEmailChange}
+            onError={hasError => setError(hasError)}
+            required
+          />
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+          {(isSignUp || emailVerified) && (
+            <InputField
+              type="password"
+              value={password}
+              placeholder="Password here"
+              label="Password"
+              onChange={handlePasswordChange}
+              onError={hasError => setError(hasError)}
+              required
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+          )}
+
+          <Button disabled={isButtonDisabled} onClick={handleContinue}>
+            {buttonText}
+          </Button>
+        </div>
+        <div className={styles.page__links}>
+          {texts.forgotPasswordVisible && (
+            <Link href="/forgot-password">Forgot Password?</Link>
+          )}
+          <span>
+            {texts.alternateActionText}{' '}
+            <Link href={isSignUp ? '/' : '?signUp=true'}>
+              {texts.alternateActionLink}
+            </Link>
+          </span>
         </div>
       </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
-  );
+  )
 }
