@@ -43,5 +43,6 @@ With additional time, I would enhance the project in several ways:
 - Potentially separate frontend and backend into distinct repositories
 - Create documentation including API specifications, coding standards, and architectural decisions
 - Integrate user analytics tools like Amplitude
+- Avoid using 'any' type and implement shared type definitions between the API and client side, ensuring type consistency across the entire application**
 
 These improvements would enhance both the developer experience and end-user satisfaction with the application.
