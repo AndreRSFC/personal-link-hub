@@ -23,7 +23,6 @@ interface ProfileData {
 }
 
 export default function ProfilePage() {
-  // No App Router, usamos useParams em vez de useRouter.query
   const params = useParams()
   const username = params.userName as string
 
@@ -33,65 +32,64 @@ export default function ProfilePage() {
       const response = await fetch(`/api/p/${username}`)
 
       if (!response.ok) {
-        throw new Error('Erro ao buscar dados do perfil')
+        throw new Error('Error fetching profile data')
       }
 
       return response.json() as Promise<ProfileData>
     },
     enabled: !!username,
-    staleTime: 1000 * 60 * 5, // 5 minutos
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 
   if (!username) {
-    return <div className={styles.links_page__loading}>Carregando...</div>
+    return <div className={styles.links_page__loading}>Loading...</div>
   }
 
   if (isLoading) {
-    return (
-      <div className={styles.links_page__loading}>Carregando perfil...</div>
-    )
+    return <div className={styles.links_page__loading}>Loading profile...</div>
   }
 
   if (isError || !data) {
-    console.error('Erro ao carregar o perfil:', error)
     return (
       <div className={styles.links_page__error}>
-        Erro ao carregar o perfil. Tente novamente.
+        Error loading profile. Please try again.
       </div>
     )
   }
 
   return (
-    <div className={styles.links_page}>
-      <div className={styles.links_page__profile}>
-        <UserImage
-          src={data.profile.profile_image_url}
-          alt={data.profile.name}
-          size={80}
-          className={styles.links_page__profile_image}
-        />
-        <h1 className={styles.links_page__profile_name}>{data.profile.name}</h1>
-        <p className={styles.links_page__profile_description}>
-          {data.profile.description}
-        </p>
-      </div>
+    <div className={styles.links_page__container}>
+      <div className={styles.links_page}>
+        <div className={styles.links_page__profile}>
+          <UserImage
+            src={data.profile.profile_image_url}
+            alt={data.profile.name}
+            size={80}
+            className={styles.links_page__profile_image}
+          />
+          <h1 className={styles.links_page__profile_name}>
+            {data.profile.name}
+          </h1>
+          <p className={styles.links_page__profile_description}>
+            {data.profile.description}
+          </p>
+        </div>
 
-      <div className={styles.links_page__links}>
-        <h2 className={styles.links_page__links_title}>Meus Links</h2>
-
-        {data.links.length === 0 ? (
-          <p className={styles.links_page__no_links}>Nenhum link encontrado.</p>
-        ) : (
-          data.links.map(link => (
-            <LinkCard
-              key={link.id}
-              id={link.id}
-              title={link.title}
-              url={link.url}
-              image_url={link.image_url}
-            />
-          ))
-        )}
+        <div className={styles.links_page__links}>
+          {data.links.length === 0 ? (
+            <p className={styles.links_page__no_links}>No links found.</p>
+          ) : (
+            data.links.map(link => (
+              <LinkCard
+                key={link.id}
+                id={link.id}
+                title={link.title}
+                url={link.url}
+                image_url={link.image_url}
+              />
+            ))
+          )}
+        </div>
       </div>
     </div>
   )

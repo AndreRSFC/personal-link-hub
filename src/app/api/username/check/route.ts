@@ -1,4 +1,3 @@
-// app/api/username/check/route.ts
 import { supabase } from '@/lib/supabase'
 import { type NextRequest, NextResponse } from 'next/server'
 

@@ -1,5 +1,5 @@
 import { UserImage } from '@/components/user-image'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import styles from './link-card.module.css'
 
 interface LinkCardProps {
@@ -9,13 +9,10 @@ interface LinkCardProps {
   image_url: string | null
 }
 
-export const LinkCard: React.FC<LinkCardProps> = ({
-  id,
-  title,
-  url,
-  image_url,
-}) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
+export const LinkCard = ({ id, title, url, image_url }: LinkCardProps) => {
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
+  const popoverRef = useRef<HTMLDivElement>(null)
+  const optionsButtonRef = useRef<HTMLButtonElement>(null)
 
   const handleCardClick = () => {
     copyToClipboard(url)
@@ -24,26 +21,35 @@ export const LinkCard: React.FC<LinkCardProps> = ({
 
   const handleOptionsClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    setIsModalOpen(true)
-  }
-
-  const handleModalClose = () => {
-    setIsModalOpen(false)
+    setIsPopoverOpen(!isPopoverOpen)
   }
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        console.log('Link copiado!')
-      })
-      .catch(err => {
-        console.error('Erro ao copiar link:', err)
-      })
+    navigator.clipboard.writeText(text)
   }
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const isClickOutsidePopOver =
+        popoverRef.current && !popoverRef.current.contains(event.target as Node)
+
+      const isClickOutsideButton =
+        optionsButtonRef.current &&
+        !optionsButtonRef.current.contains(event.target as Node)
+
+      if (isClickOutsidePopOver && isClickOutsideButton) {
+        setIsPopoverOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
   return (
-    <div className={styles.link_card}>
+    <div className={styles.link_card} key={id}>
       <div
         className={styles.link_card__container}
         onClick={handleCardClick}
@@ -51,51 +57,36 @@ export const LinkCard: React.FC<LinkCardProps> = ({
       >
         {image_url && (
           <div className={styles.link_card__image}>
-            <UserImage src={image_url} alt={title} size={40} />
+            <UserImage src={image_url} alt={title} size={32} />
           </div>
         )}
         <div className={styles.link_card__content}>
           <h3 className={styles.link_card__title}>{title}</h3>
-          <p className={styles.link_card__url}>{url}</p>
         </div>
         <button
           className={styles.link_card__options}
           onClick={handleOptionsClick}
-          aria-label="Opções"
+          aria-label="Options"
           type="button"
+          ref={optionsButtonRef}
         >
           <span className={styles.link_card__dots}>⋮</span>
         </button>
       </div>
 
-      {isModalOpen && (
-        <div
-          className={styles.link_card__modal_overlay}
-          onClick={handleModalClose}
-          onKeyDown={handleModalClose}
-        >
-          <div
-            className={styles.link_card__modal}
-            onClick={e => e.stopPropagation()}
-            onKeyDown={e => e.stopPropagation()}
-          >
-            <h4 className={styles.link_card__modal_title}>Opções</h4>
+      {isPopoverOpen && (
+        <div className={styles.link_card__popover} ref={popoverRef}>
+          <div className={styles.link_card__popover_content}>
             <button
               className={styles.link_card__copy_button}
-              onClick={() => {
+              onClick={e => {
+                e.stopPropagation()
                 copyToClipboard(url)
-                setIsModalOpen(false)
+                setIsPopoverOpen(false)
               }}
               type="button"
             >
-              Copiar Link
-            </button>
-            <button
-              className={styles.link_card__close_button}
-              onClick={handleModalClose}
-              type="button"
-            >
-              Fechar
+              Copy Link
             </button>
           </div>
         </div>
