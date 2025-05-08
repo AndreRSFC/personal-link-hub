@@ -1,4 +1,3 @@
-// lib/auth.ts
 import NextAuth, { type AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { supabaseAdmin } from './supabase'
@@ -17,7 +16,6 @@ export const authOptions: AuthOptions = {
         }
 
         try {
-          // Autenticar com Supabase
           const { data, error } = await supabaseAdmin.auth.signInWithPassword({
             email: credentials.email,
             password: credentials.password,
@@ -27,9 +25,6 @@ export const authOptions: AuthOptions = {
             return null
           }
 
-          console.log(data, 'data')
-
-          // Buscar dados do perfil
           const { data: profileData } = await supabaseAdmin
             .from('profiles')
             .select('*')
