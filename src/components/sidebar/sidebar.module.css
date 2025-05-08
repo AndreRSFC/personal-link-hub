@@ -136,3 +136,9 @@
   background-color: rgba(0, 0, 0, 0.06);
   color: #333;
 }
+
+@media (max-width: 700px) {
+  .sidebar {
+    display: none;
+  }
+}

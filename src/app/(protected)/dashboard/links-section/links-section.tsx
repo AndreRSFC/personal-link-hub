@@ -64,9 +64,8 @@ export const LinksSection = () => {
       linkData,
       imageFile,
     }: { linkData: LinkItem; imageFile: File | null }) => {
-      let updatedLinkData = { ...linkData }
+      const updatedLinkData = { ...linkData }
 
-      // Upload image if exists
       if (imageFile) {
         try {
           const imageUrl = await uploadImageMutation.mutateAsync(imageFile)
@@ -109,9 +108,8 @@ export const LinksSection = () => {
       linkData,
       imageFile,
     }: { linkData: LinkItem; imageFile: File | null }) => {
-      let updatedLinkData = { ...linkData }
+      const updatedLinkData = { ...linkData }
 
-      // Upload image if exists
       if (imageFile) {
         try {
           const imageUrl = await uploadImageMutation.mutateAsync(imageFile)
