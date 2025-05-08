@@ -22,7 +22,7 @@ export const Sidebar: React.FC = () => {
       <header className={styles.header}>
         <div className={styles.header__grid}>
           <MenuIcon className={styles.header__icon} />
-          <div className={styles.header__title}>My Linktree</div>
+          <div className={styles.header__title}>My LinkHub</div>
           <ChevronIcon className={styles.header__chevron} />
         </div>
       </header>

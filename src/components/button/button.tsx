@@ -1,3 +1,4 @@
+import { ButtonStyle, ButtonVariant } from './'
 import styles from './button.module.css'
 
 interface ButtonProps {
@@ -7,6 +8,8 @@ interface ButtonProps {
   disabled?: boolean
   loading?: boolean
   className?: string
+  variant?: `${ButtonVariant}`
+  buttonStyle?: `${ButtonStyle}`
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -16,18 +19,24 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   loading = false,
   className = '',
+  variant = ButtonVariant.DEFAULT,
+  buttonStyle = ButtonStyle.PRIMARY,
 }) => {
-  const buttonClassName = `
-    ${styles.button}
-    ${disabled ? styles['button--disabled'] : ''}
-    ${loading ? styles['button--loading'] : ''}
-    ${className}
-  `.trim()
+  const buttonClasses = [
+    styles.button,
+    styles[`button--${buttonStyle}`],
+    variant !== ButtonVariant.DEFAULT ? styles[`button--${variant}`] : '',
+    disabled ? styles['button--disabled'] : '',
+    loading ? styles['button--loading'] : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <button
       type={type}
-      className={buttonClassName}
+      className={buttonClasses}
       onClick={onClick}
       disabled={disabled || loading}
     >

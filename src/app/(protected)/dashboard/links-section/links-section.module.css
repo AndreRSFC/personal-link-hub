@@ -1,7 +1,80 @@
-.linksSection__container {
+.links_section__container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.links_section__buttonContainer {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: space-between;
+}
+
+.links_section__checkbox {
+  display: flex;
+  align-items: center;
+  margin: 16px 0;
+}
+
+.links_section__checkbox label {
+  margin-left: 8px;
+}
+
+.links_section__confirmModal {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.links_section__confirmModal p {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.links_section__confirmButtons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* Form Image Styles */
+.links_section__formImageContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
-  max-width: 600px;
+  margin-bottom: 20px;
+}
+
+.links_section__formImageText {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+.links_section__removeImageBtn {
+  background: none;
+  border: none;
+  color: #e53e3e;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 8px;
+  text-decoration: underline;
+  transition: opacity 0.2s;
+}
+
+.links_section__removeImageBtn:hover {
+  opacity: 0.8;
+}
+
+@media (max-width: 480px) {
+  .links_section__buttonContainer {
+    flex-direction: column;
+  }
+
+  .links_section__confirmButtons {
+    flex-direction: column;
+  }
 }

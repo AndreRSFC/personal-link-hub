@@ -1,11 +1,12 @@
 'use client'
-import { Button } from '@/components/button'
-import { InputField } from '@/components/input'
+import { Button, ButtonStyle } from '@/components/button'
 import { LinksList } from '@/components/link-list'
 import { Modal } from '@/components/modal'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
-import styled from './links-section.module.css'
+import { useState } from 'react'
+import { DeleteConfirmationModal } from '../delete-confirmation'
+import { LinkForm } from './link-form'
+import styles from './links-section.module.css'
 
 interface LinkItem {
   id: string
@@ -17,16 +18,15 @@ interface LinkItem {
 
 export const LinksSection = () => {
   const queryClient = useQueryClient()
-  const [selectedLink, setSelectedLink] = useState<LinkItem | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [linkData, setLinkData] = useState<LinkItem>({
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
+  const [currentLink, setCurrentLink] = useState<LinkItem>({
     id: '',
     title: '',
     url: '',
     is_visible: true,
     image_url: null,
   })
-  const [localLinks, setLocalLinks] = useState<LinkItem[]>([])
   const [isNewLink, setIsNewLink] = useState(false)
 
   const { data: profileData, isLoading: isLoadingProfile } = useQuery({
@@ -34,21 +34,49 @@ export const LinksSection = () => {
     queryFn: async () => {
       const response = await fetch('/api/user/profile')
       if (!response.ok) {
-        throw new Error('Erro ao buscar perfil e links')
+        throw new Error('Error fetching profile and links')
       }
       return response.json()
     },
   })
 
-  useEffect(() => {
-    if (profileData?.links) {
-      setLocalLinks(profileData.links)
-    }
-  }, [profileData])
+  const uploadImageMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/link/image', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Error uploading image')
+      }
+
+      const data = await response.json()
+      return data.imageUrl
+    },
+  })
 
   const addLinkMutation = useMutation({
-    mutationFn: async (newLinkData: LinkItem) => {
-      const updatedLocalLinks = [...localLinks, newLinkData]
+    mutationFn: async ({
+      linkData,
+      imageFile,
+    }: { linkData: LinkItem; imageFile: File | null }) => {
+      let updatedLinkData = { ...linkData }
+
+      // Upload image if exists
+      if (imageFile) {
+        try {
+          const imageUrl = await uploadImageMutation.mutateAsync(imageFile)
+          updatedLinkData.image_url = imageUrl
+        } catch (error) {
+          console.error('Error uploading image:', error)
+        }
+      }
+
+      const updatedLocalLinks = [...(profileData?.links || []), updatedLinkData]
 
       const response = await fetch('/api/user/profile', {
         method: 'PATCH',
@@ -62,7 +90,7 @@ export const LinksSection = () => {
       })
 
       if (!response.ok) {
-        throw new Error('Erro ao adicionar link')
+        throw new Error('Error adding link')
       }
 
       return response.json()
@@ -72,17 +100,30 @@ export const LinksSection = () => {
       handleModalClose()
     },
     onError: () => {
-      console.error('Falha ao adicionar link')
+      console.error('Failed to add link')
     },
   })
 
   const updateLinkMutation = useMutation({
-    mutationFn: async () => {
-      const updatedLinks = localLinks.map((item: LinkItem) =>
-        item.id === linkData.id ? linkData : item
-      )
+    mutationFn: async ({
+      linkData,
+      imageFile,
+    }: { linkData: LinkItem; imageFile: File | null }) => {
+      let updatedLinkData = { ...linkData }
 
-      setLocalLinks(updatedLinks)
+      // Upload image if exists
+      if (imageFile) {
+        try {
+          const imageUrl = await uploadImageMutation.mutateAsync(imageFile)
+          updatedLinkData.image_url = imageUrl
+        } catch (error) {
+          console.error('Error uploading image:', error)
+        }
+      }
+
+      const updatedLinks = (profileData?.links || []).map((item: LinkItem) =>
+        item.id === updatedLinkData.id ? updatedLinkData : item
+      )
 
       const response = await fetch('/api/user/profile', {
         method: 'PATCH',
@@ -96,8 +137,7 @@ export const LinksSection = () => {
       })
 
       if (!response.ok) {
-        setLocalLinks(profileData?.links || [])
-        throw new Error('Erro ao atualizar link')
+        throw new Error('Error updating link')
       }
 
       return response.json()
@@ -107,7 +147,40 @@ export const LinksSection = () => {
       handleModalClose()
     },
     onError: () => {
-      console.error('Falha ao atualizar link')
+      console.error('Failed to update link')
+    },
+  })
+
+  const deleteLinkMutation = useMutation({
+    mutationFn: async (linkId: string) => {
+      const filteredLinks = (profileData?.links || []).filter(
+        link => link.id !== linkId
+      )
+
+      const response = await fetch('/api/user/profile', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          profile: profileData?.profile || {},
+          links: filteredLinks,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Error deleting link')
+      }
+
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['userLinks'] })
+      handleModalClose()
+      setIsDeleteConfirmOpen(false)
+    },
+    onError: () => {
+      console.error('Failed to delete link')
     },
   })
 
@@ -125,8 +198,7 @@ export const LinksSection = () => {
       })
 
       if (!response.ok) {
-        setLocalLinks(profileData?.links || [])
-        throw new Error('Erro ao reordenar links')
+        throw new Error('Error reordering links')
       }
 
       return response.json()
@@ -135,142 +207,92 @@ export const LinksSection = () => {
       queryClient.invalidateQueries({ queryKey: ['userLinks'] })
     },
     onError: () => {
-      console.error('Falha ao reordenar links')
+      console.error('Failed to reorder links')
     },
   })
 
   const handleAddLink = () => {
-    setLinkData({
+    setCurrentLink({
       id: '',
       title: '',
       url: '',
       is_visible: true,
       image_url: null,
     })
-
     setIsNewLink(true)
-
     setIsModalOpen(true)
   }
 
   const handleItemClick = (link: LinkItem) => {
-    setLinkData({
-      id: link.id,
-      title: link.title,
-      url: link.url,
-      is_visible: link.is_visible ?? true,
-      image_url: link.image_url,
-    })
-    setSelectedLink(link)
+    setCurrentLink(link)
     setIsNewLink(false)
     setIsModalOpen(true)
   }
 
   const handleModalClose = () => {
     setIsModalOpen(false)
-    setSelectedLink(null)
-    setIsNewLink(false)
+  }
+
+  const handleDeleteConfirm = () => {
+    if (currentLink.id) {
+      deleteLinkMutation.mutate(currentLink.id)
+    }
+  }
+
+  const handleSubmitLink = (linkData: LinkItem, imageFile: File | null) => {
+    if (isNewLink) {
+      addLinkMutation.mutate({ linkData, imageFile })
+    } else {
+      updateLinkMutation.mutate({ linkData, imageFile })
+    }
   }
 
   const handleReorder = (newItems: LinkItem[]) => {
-    setLocalLinks(newItems)
-
     reorderLinksMutation.mutate(newItems)
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setLinkData(prev => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-  const toggleVisibility = () => {
-    setLinkData(prev => ({
-      ...prev,
-      is_visible: !prev.is_visible,
-    }))
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (isNewLink) {
-      addLinkMutation.mutate(linkData)
-    } else {
-      updateLinkMutation.mutate()
-    }
   }
 
   return (
     <>
-      <div className={styled.linksSection__container}>
+      <div className={styles.links_section__container}>
         <LinksList
-          items={localLinks}
+          items={profileData?.links || []}
           onItemClick={handleItemClick}
           onReorder={handleReorder}
         />
-        <Button onClick={handleAddLink} type="button">
-          + Adicionar Novo Link
+        <Button
+          onClick={handleAddLink}
+          type="button"
+          buttonStyle={ButtonStyle.SECONDARY}
+        >
+          + Add New Link
         </Button>
       </div>
 
       <Modal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        title={isNewLink ? 'Adicionar Novo Link' : 'Editar Link'}
+        title={isNewLink ? 'Add New Link' : 'Edit Link'}
       >
-        <form onSubmit={handleSubmit}>
-          <InputField
-            value={linkData.title}
-            placeholder="Título do link"
-            label="Título"
-            onChange={handleChange}
-            required
-          />
-
-          <InputField
-            value={linkData.url}
-            placeholder="URL (ex: https://exemplo.com)"
-            label="URL"
-            onChange={handleChange}
-            required
-          />
-
-          <div
-            style={{ display: 'flex', alignItems: 'center', margin: '16px 0' }}
-          >
-            <input
-              type="checkbox"
-              id="visibility"
-              checked={linkData.is_visible}
-              onChange={toggleVisibility}
-            />
-            <label htmlFor="visibility" style={{ marginLeft: '8px' }}>
-              Visível
-            </label>
-          </div>
-
-          <Button
-            type="submit"
-            disabled={
-              !linkData.title ||
-              !linkData.url ||
-              updateLinkMutation.isPending ||
-              addLinkMutation.isPending
-            }
-          >
-            {isNewLink
-              ? addLinkMutation.isPending
-                ? 'Adicionando...'
-                : 'Adicionar'
-              : updateLinkMutation.isPending
-                ? 'Salvando...'
-                : 'Salvar'}
-          </Button>
-        </form>
+        <LinkForm
+          initialData={currentLink}
+          isNewLink={isNewLink}
+          isLoading={
+            addLinkMutation.isPending ||
+            updateLinkMutation.isPending ||
+            uploadImageMutation.isPending
+          }
+          onSubmit={handleSubmitLink}
+          onDelete={() => setIsDeleteConfirmOpen(true)}
+          isDeleting={deleteLinkMutation.isPending}
+        />
       </Modal>
+
+      <DeleteConfirmationModal
+        isOpen={isDeleteConfirmOpen}
+        onClose={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        isDeleting={deleteLinkMutation.isPending}
+      />
     </>
   )
 }

@@ -1,5 +1,7 @@
 'use client'
 
+import { DEFAULT_USER_IMAGE } from '@/constant/app.constant'
+import { useQuery } from '@tanstack/react-query'
 import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 import { UserImage } from '../user-image'
@@ -9,6 +11,17 @@ export const UserMenu = () => {
   const { data: session } = useSession()
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  const { data: profileData } = useQuery({
+    queryKey: ['userLinks'],
+    queryFn: async () => {
+      const response = await fetch('/api/user/profile')
+      if (!response.ok) {
+        throw new Error('Error fetching profile and links')
+      }
+      return response.json()
+    },
+  })
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -35,7 +48,8 @@ export const UserMenu = () => {
         onClick={() => setIsOpen(true)}
         src={
           session.user?.image ??
-          'https://ugc.production.linktr.ee/c848e59a-79c6-4e0a-bcfc-4e6e291b8112_untitled.webp?io=true&size=avatar'
+          profileData?.profile.profile_image_url ??
+          DEFAULT_USER_IMAGE
         }
         size={32}
       />

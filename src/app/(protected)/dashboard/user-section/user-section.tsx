@@ -2,6 +2,7 @@ import { Button } from '@/components/button'
 import { InputField } from '@/components/input'
 import { Modal } from '@/components/modal'
 import { UserImage } from '@/components/user-image'
+import { DEFAULT_USER_IMAGE } from '@/constant/app.constant'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import styled from '../dashboard.module.css'
@@ -136,10 +137,7 @@ export const UserSection = () => {
     <>
       <div className={styled.dashboard__user}>
         <UserImage
-          src={
-            profileData?.profile.profile_image_url ||
-            'https://via.placeholder.com/60'
-          }
+          src={profileData?.profile.profile_image_url || DEFAULT_USER_IMAGE}
           size={60}
           onClick={openModal}
         />
