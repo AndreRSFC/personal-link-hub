@@ -7,6 +7,7 @@ interface ProfileUpdateRequest {
   profile: {
     name?: string
     description?: string
+    username?: string
   }
   links: Array<{
     title: string
@@ -80,6 +81,7 @@ export async function PATCH(request: NextRequest) {
       .update({
         name: profile.name,
         description: profile.description,
+        username: profile.username,
         updated_at: new Date().toISOString(),
       })
       .eq('id', session.user.id)

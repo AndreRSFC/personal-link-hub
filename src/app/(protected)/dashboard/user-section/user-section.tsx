@@ -3,6 +3,7 @@ import { InputField } from '@/components/input'
 import { Modal } from '@/components/modal'
 import { UserImage } from '@/components/user-image'
 import { DEFAULT_USER_IMAGE } from '@/constant/app.constant'
+import { EditIcon } from '@/icons'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
 import styled from '../dashboard.module.css'
@@ -15,6 +16,7 @@ export const UserSection = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    username: '',
   })
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -24,7 +26,7 @@ export const UserSection = () => {
     queryFn: async () => {
       const response = await fetch('/api/user/profile')
       if (!response.ok) {
-        throw new Error('Erro ao buscar dados do perfil')
+        throw new Error('Error fetching profile data')
       }
       return response.json() as Promise<ProfileDataModel>
     },
@@ -41,7 +43,7 @@ export const UserSection = () => {
       })
 
       if (!response.ok) {
-        throw new Error('Erro ao fazer upload da imagem')
+        throw new Error('Error uploading image')
       }
 
       const data = await response.json()
@@ -53,7 +55,12 @@ export const UserSection = () => {
     mutationFn: async ({
       name,
       description,
-    }: { name: string; description: string }) => {
+      username,
+    }: {
+      name: string
+      description: string
+      username: string
+    }) => {
       const response = await fetch('/api/user/profile', {
         method: 'PATCH',
         headers: {
@@ -63,13 +70,14 @@ export const UserSection = () => {
           profile: {
             name,
             description,
+            username,
           },
           links: profileData?.links || [],
         }),
       })
 
       if (!response.ok) {
-        throw new Error('Erro ao atualizar perfil')
+        throw new Error('Error updating profile')
       }
 
       return response.json()
@@ -85,6 +93,7 @@ export const UserSection = () => {
       setFormData({
         name: profileData.profile.name || '',
         description: profileData.profile.description || '',
+        username: profileData.profile.username || '',
       })
       setImagePreview(null)
       setImageFile(null)
@@ -122,9 +131,10 @@ export const UserSection = () => {
       await updateProfileMutation.mutateAsync({
         name: formData.name,
         description: formData.description,
+        username: formData.username,
       })
     } catch (error) {
-      console.error('Erro ao salvar perfil:', error)
+      console.error('Error saving profile:', error)
     }
   }
 
@@ -133,43 +143,84 @@ export const UserSection = () => {
     uploadImageMutation.isPending ||
     updateProfileMutation.isPending
 
+  const hasEmptyFields =
+    !profileData?.profile.name ||
+    !profileData?.profile.description ||
+    !profileData?.profile.username
+
   return (
     <>
       <div className={styled.dashboard__user}>
-        <UserImage
-          src={profileData?.profile.profile_image_url || DEFAULT_USER_IMAGE}
-          size={60}
-          onClick={openModal}
-        />
+        <div className={styled.dashboard__imageWrapper}>
+          <UserImage
+            src={profileData?.profile.profile_image_url || DEFAULT_USER_IMAGE}
+            size={60}
+            onClick={openModal}
+          />
+          <div
+            className={styled.dashboard__editIconOverlay}
+            onClick={openModal}
+            onKeyDown={openModal}
+          >
+            <EditIcon />
+          </div>
+        </div>
         <div className={styled.dashboard__userInfo}>
-          <span
-            className={styled.dashboard__userInfo__name}
-            onClick={openModal}
-            onKeyDown={openModal}
-          >
-            {profileData?.profile.name || 'User Name'}
-          </span>
-          <span
-            className={styled.dashboard__userInfo__description}
-            onClick={openModal}
-            onKeyDown={openModal}
-          >
-            {profileData?.profile.description || 'Bio description'}
-          </span>
+          <div className={styled.dashboard__infoItem}>
+            <span
+              className={styled.dashboard__userInfo__name}
+              onClick={openModal}
+              onKeyDown={openModal}
+            >
+              {profileData?.profile.name || 'User Name'}
+              {(hasEmptyFields || styled.dashboard__hoverParent) && (
+                <span className={styled.dashboard__editIcon}>
+                  <EditIcon />
+                </span>
+              )}
+            </span>
+          </div>
+          <div className={styled.dashboard__infoItem}>
+            <span
+              className={styled.dashboard__userInfo__description}
+              onClick={openModal}
+              onKeyDown={openModal}
+            >
+              {profileData?.profile.description || 'Bio description'}
+              {(hasEmptyFields || styled.dashboard__hoverParent) && (
+                <span className={styled.dashboard__editIcon}>
+                  <EditIcon />
+                </span>
+              )}
+            </span>
+          </div>
+          <div className={styled.dashboard__infoItem}>
+            <span
+              className={styled.dashboard__userInfo__username}
+              onClick={openModal}
+              onKeyDown={openModal}
+            >
+              <span className={styled.dashboard__usernameUrl}>
+                linktree.com/
+                {profileData?.profile.username || 'username'}
+              </span>
+              {(hasEmptyFields || styled.dashboard__hoverParent) && (
+                <span className={styled.dashboard__editIcon}>
+                  <EditIcon />
+                </span>
+              )}
+            </span>
+          </div>
         </div>
       </div>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        title="Display name and bio"
-      >
+      <Modal isOpen={isModalOpen} onClose={closeModal} title="Edit profile">
         <form onSubmit={handleSubmit}>
           <div className={styled.dashboard__formImageContainer}>
             <UserImage
               src={
                 imagePreview ||
                 profileData?.profile.profile_image_url ||
-                'https://via.placeholder.com/100'
+                DEFAULT_USER_IMAGE
               }
               size={100}
               onClick={triggerFileInput}
@@ -182,7 +233,7 @@ export const UserSection = () => {
               onChange={handleImageSelect}
             />
             <p className={styled.dashboard__formImageText}>
-              Clique para alterar a imagem
+              Click to change image
             </p>
           </div>
 
@@ -209,11 +260,34 @@ export const UserSection = () => {
               }))
             }
           />
+
+          <div className={styled.dashboard__usernameField}>
+            <InputField
+              value={formData.username}
+              placeholder="Your unique username"
+              label="Username"
+              onChange={e =>
+                setFormData(prev => ({
+                  ...prev,
+                  username: e.target.value.replace(/\s+/g, '').toLowerCase(),
+                }))
+              }
+            />
+            <div className={styled.dashboard__usernamePreview}>
+              linktree.com/{formData.username || 'username'}
+            </div>
+          </div>
+
           <Button
             type="submit"
-            disabled={!formData.name || !formData.description || isLoading}
+            disabled={
+              !formData.name ||
+              !formData.description ||
+              !formData.username ||
+              isLoading
+            }
           >
-            {isLoading ? 'Salvando...' : 'Save'}
+            {isLoading ? 'Saving...' : 'Save'}
           </Button>
         </form>
       </Modal>

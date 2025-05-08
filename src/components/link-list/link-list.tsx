@@ -75,7 +75,7 @@ export const LinksList: React.FC<LinksListProps> = ({
                   <li
                     ref={provided.innerRef}
                     {...provided.draggableProps}
-                    className={`${styles.linkItem} ${snapshot.isDragging ? styles.dragging : ''}`}
+                    className={`${styles.linkItem} ${snapshot.isDragging ? styles.dragging : ''} ${item.is_visible === false ? styles.linkItem__inactive : ''}`}
                     style={{
                       ...provided.draggableProps.style,
                     }}
@@ -108,6 +108,14 @@ export const LinksList: React.FC<LinksListProps> = ({
                         <p className={styles.linkTitle}>{item.title}</p>
                         <p className={styles.linkUrl}>{item.url}</p>
                       </div>
+                    </div>
+
+                    <div className={styles.linkStatus}>
+                      <span
+                        className={`${styles.statusIndicator} ${item.is_visible === false ? styles.statusIndicator__inactive : styles.statusIndicator__active}`}
+                      >
+                        {item.is_visible === false ? 'Hidden' : 'Active'}
+                      </span>
                     </div>
                   </li>
                 )}

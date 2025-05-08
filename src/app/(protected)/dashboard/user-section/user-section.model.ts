@@ -3,6 +3,7 @@ export interface ProfileDataModel {
     name: string
     description: string
     profile_image_url: string
+    username: string
   }
   links: Array<{
     id: string

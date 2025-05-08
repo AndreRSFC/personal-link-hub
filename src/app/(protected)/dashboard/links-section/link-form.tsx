@@ -42,11 +42,14 @@ export const LinkForm: React.FC<LinkFormProps> = ({
     setImageFile(null)
   }, [initialData])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    inputName: string
+  ) => {
+    const { value } = e.target
     setLinkData(prev => ({
       ...prev,
-      [name]: value,
+      [inputName]: value,
     }))
   }
 
@@ -121,7 +124,7 @@ export const LinkForm: React.FC<LinkFormProps> = ({
         value={linkData.title}
         placeholder="Link title"
         label="Title"
-        onChange={handleChange}
+        onChange={e => handleChange(e, 'title')}
         required
       />
 
@@ -129,7 +132,7 @@ export const LinkForm: React.FC<LinkFormProps> = ({
         value={linkData.url}
         placeholder="URL (e.g. https://example.com)"
         label="URL"
-        onChange={handleChange}
+        onChange={e => handleChange(e, 'url')}
         required
       />
 
