@@ -14,6 +14,12 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'Personal Link Hub',
   description: 'Take your life easy',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', type: 'image/x-icon' },
+    ],
+  },
 }
 
 export default function RootLayout({
