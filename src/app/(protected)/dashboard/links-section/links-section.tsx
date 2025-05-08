@@ -152,7 +152,7 @@ export const LinksSection = () => {
   const deleteLinkMutation = useMutation({
     mutationFn: async (linkId: string) => {
       const filteredLinks = (profileData?.links || []).filter(
-        link => link.id !== linkId
+        (link: any) => link.id !== linkId
       )
 
       const response = await fetch('/api/user/profile', {

@@ -10,7 +10,7 @@ export const authOptions: AuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Senha', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials: any): Promise<any> {
         if (!credentials?.email || !credentials?.password) {
           return null
         }

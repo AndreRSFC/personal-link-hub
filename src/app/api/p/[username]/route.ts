@@ -1,13 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import { type NextRequest, NextResponse } from 'next/server'
 
-interface RouteParams {
-  params: {
-    username: string
-  }
-}
-
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, { params }: any) {
   try {
     const { username } = params
 
