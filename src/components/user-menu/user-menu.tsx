@@ -13,7 +13,7 @@ export const UserMenu = () => {
   const menuRef = useRef<HTMLDivElement>(null)
 
   const { data: profileData } = useQuery({
-    queryKey: ['userLinks'],
+    queryKey: ['userProfile'],
     queryFn: async () => {
       const response = await fetch('/api/user/profile')
       if (!response.ok) {

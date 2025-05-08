@@ -286,8 +286,9 @@ export const UserSection = () => {
               !formData.username ||
               isLoading
             }
+            loading={isLoading}
           >
-            {isLoading ? 'Saving...' : 'Save'}
+            Save
           </Button>
         </form>
       </Modal>

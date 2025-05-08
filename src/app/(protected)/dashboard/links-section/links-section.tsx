@@ -30,7 +30,7 @@ export const LinksSection = () => {
   const [isNewLink, setIsNewLink] = useState(false)
 
   const { data: profileData, isLoading: isLoadingProfile } = useQuery({
-    queryKey: ['userLinks'],
+    queryKey: ['userProfile'],
     queryFn: async () => {
       const response = await fetch('/api/user/profile')
       if (!response.ok) {
