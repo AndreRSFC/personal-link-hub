@@ -201,7 +201,7 @@ export const UserSection = () => {
               onKeyDown={openModal}
             >
               <span className={styled.dashboard__usernameUrl}>
-                linktree.com/
+                personal-link-hub-drab.vercel.app/
                 {profileData?.profile.username || 'username'}
               </span>
               {(hasEmptyFields || styled.dashboard__hoverParent) && (
@@ -274,7 +274,8 @@ export const UserSection = () => {
               }
             />
             <div className={styled.dashboard__usernamePreview}>
-              linktree.com/{formData.username || 'username'}
+              personal-link-hub-drab.vercel.app/
+              {formData.username || 'username'}
             </div>
           </div>
 

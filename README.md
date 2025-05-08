@@ -1,6 +1,6 @@
 # Personal Link Hub
-
 A modern link management platform that allows users to create and share a personalized page with multiple links, similar to Linktree.
+Live Demo: https://personal-link-hub-drab.vercel.app/dashboard
 
 ## Summary of Implemented Features
 
@@ -199,3 +199,21 @@ npm run test:watch  # Run tests in watch mode
   }
 }
 ```
+
+## Screenshots
+
+### Sign In Page (/signin)
+![Sign In Page](/images/signin.png.png)
+*User authentication screen with email and password login.*
+
+### Sign Up Page (/signup)
+![Sign Up Page](/images/signup.png)
+*Registration page for new users with form validation.*
+
+### Dashboard (/dashboard)
+![Dashboard Page](/images/dashboard.png)
+*Main control panel where users can manage their profile and links.*
+
+### Public Profile Page (/:username)
+![Public Profile Page](/images/username.png)
+*Example of a published profile page that visitors see when accessing a user's links.*

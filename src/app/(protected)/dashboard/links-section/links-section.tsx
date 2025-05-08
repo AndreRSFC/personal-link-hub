@@ -95,7 +95,7 @@ export const LinksSection = () => {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userLinks'] })
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] })
       handleModalClose()
     },
     onError: () => {
@@ -141,7 +141,7 @@ export const LinksSection = () => {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userLinks'] })
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] })
       handleModalClose()
     },
     onError: () => {
@@ -173,7 +173,7 @@ export const LinksSection = () => {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userLinks'] })
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] })
       handleModalClose()
       setIsDeleteConfirmOpen(false)
     },
@@ -202,7 +202,7 @@ export const LinksSection = () => {
       return response.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userLinks'] })
+      queryClient.invalidateQueries({ queryKey: ['userProfile'] })
     },
     onError: () => {
       console.error('Failed to reorder links')
